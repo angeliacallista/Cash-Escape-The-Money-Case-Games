@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Casg EScape games</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <div id="rotate-warning">
+        <div class="phone-icon">📱↻</div>
+        <p>Harap Miringkan HP Anda ke Posisi Landscape (16:9)</p>
+    </div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+        <div id="hud" class="hidden">
+            <div class="hud-item" id="lives-display">❤️ ❤️ ❤️</div>
+            <div class="hud-item" id="level-title">Lantai 1: Ruang Kasir</div>
+            <div class="hud-item" id="score-display">Skor: 0</div>
+            <button id="btn-share-life" class="btn-revive hidden">💖 Bagi Nyawa</button>
+            <div class="hud-item online-status" id="multiplayer-status">🌐 SOLO MODE</div>
+        </div>
+
+        <div id="welcome-screen" class="screen">
+            <div class="neon-title-box">
+                <h1 class="game-title">CASH ESCAPE</h1>
+                <h3 class="game-subtitle">THE MISSING MONEY CASE</h3>
+            </div>
+
+            <div class="multiplayer-lobby">
+                <button id="btn-start-solo" class="btn-main">🎮 MAIN SOLO (DETEKTIF TUNGGAL)</button>
+                <div class="lobby-divider">── ATAU PETUALANGAN MABAR ONLINE ──</div>
+                
+                <div id="lobby-options">
+                    <div class="room-input-group">
+                        <input type="text" id="room-name-input" placeholder="Nama Room (Contoh: DetektifHebat)" />
+                        <input type="password" id="room-pass-input" placeholder="Password Room" />
+                    </div>
+                    <div class="lobby-action-btns">
+                        <button id="btn-create-room" class="btn-secondary">🏠 Buat Room (Host)</button>
+                        <button id="btn-join-room" class="btn-secondary">🔗 Gabung Room</button>
+                    </div>
+                </div>
+
+                <div id="room-info" class="hidden">
+                    <p class="waiting-title">Room Berhasil Dibuat!</p>
+                    <div class="room-id-badge" id="display-room-name">...</div>
+                    <p class="waiting-text">Menunggu teman bergabung dengan password yang sama...</p>
+                </div>
+            </div>
+
+            <div class="welcome-footer">
+                <span>❤️ ❤️ ❤️</span>
+                <span>💎 DETEKTIF AKUNTANSI 💎</span>
+            </div>
+        </div>
+
+        <div id="intro-dialogue" class="dialogue-box hidden">
+            <div class="speaker-name">Detektif Wanita</div>
+            <div id="intro-text" class="dialogue-text">...</div>
+            <button id="btn-skip-intro" class="btn-secondary btn-skip">Lanjut [Space/Klik]</button>
+        </div>
+
+        <div id="quiz-modal" class="modal hidden">
+            <div class="modal-content quiz-content">
+                <div class="quiz-header">
+                    <span id="clue-item-name" class="clue-tag">Barang Bukti</span>
+                    <span id="quiz-question-num">Pertanyaan 1/4</span>
+                </div>
+                <div id="quiz-scenario" class="scenario-box">Skenario Kasus...</div>
+                <h3 id="quiz-question">Pertanyaan...</h3>
+                <div id="quiz-options" class="options-grid"></div>
+            </div>
+        </div>
+
+        <div id="feedback-modal" class="modal hidden">
+            <div class="modal-content feedback-content">
+                <div id="feedback-icon" class="fb-icon">💡</div>
+                <h2 id="feedback-status">Hasil Investigasi</h2>
+                <p id="feedback-text">Penjelasan akuntansi...</p>
+                <button id="btn-next-quiz" class="btn-main">Lanjutkan Investigasi ➔</button>
+            </div>
+        </div>
+
+        <div id="lift-modal" class="modal hidden">
+            <div class="modal-content lift-panel-content">
+                <h2>🏢 PANEL LIFT PERUSAHAAN</h2>
+                <p class="lift-subtitle">Pilih Tab Lantai Tujuan Anda:</p>
+                <div class="lift-display-screen">
+                    <span>LANTAI SAAT INI: </span>
+                    <span id="current-floor-indicator" class="active-floor-num">1</span>
+                </div>
+                <div class="lift-tabs-grid" id="lift-buttons-container"></div>
+            </div>
+        </div>
+
+        <div id="victory-screen" class="screen hidden">
+            <div class="pixel-victory-card">
+                <div class="victory-header-tag">PETUALANGAN SENYUM CERAH</div>
+                <h1 class="pixel-main-title">MISI SELESAI!</h1>
+                <div class="pixel-sub-banner">SKANDAL KEUANGAN TERBONGKAR!</div>
+                
+                <div class="victory-stats-row">
+                    <div class="stat-badge">❤️ Sisa Hati: <span id="final-lives">3</span></div>
+                    <div class="stat-badge">🪙 Total Poin: <span id="final-score">4000</span></div>
+                </div>
+
+                <div class="victory-dialogue-box">
+                    <strong>DIREKSI PERUSAHAAN:</strong>
+                    <p>"Kamu berhasil membawa transparansi dan kejujuran kembali ke perusahaan!"</p>
+                </div>
+
+                <button id="btn-restart" class="btn-main btn-pixel">🔄 MAIN LAGI</button>
+            </div>
+        </div>
+
+        <div id="mobile-controls">
+            <div class="dpad">
+                <button id="btn-up" class="dbtn">▲</button>
+                <div class="dpad-mid">
+                    <button id="btn-left" class="dbtn">◄</button>
+                    <button id="btn-down" class="dbtn">▼</button>
+                    <button id="btn-right" class="dbtn">►</button>
+                </div>
+            </div>
+            <div class="mobile-actions"><button id="btn-jump" class="action-btn jump-btn">⬆ LOMPAT</button><button id="btn-action" class="action-btn">E (PERIKSA)</button></div>
+        </div>
+    </div>
+
+    <script src="script.js?v=1000"></script>
+</body>
+</html>
